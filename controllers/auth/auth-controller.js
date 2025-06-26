@@ -70,18 +70,17 @@ const loginUser = async (req, res) => {
       { expiresIn: "60m" }
     );
 
-    // ✅ Set cookie
+    // ✅ Set cookie for cross-origin
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true, // Set to true in production
-      sameSite: "None",
+      secure: true,       // ✅ must be true on HTTPS (like Render)
+      sameSite: "None",   // ✅ required for cross-origin cookies
     });
 
-    // ✅ Return token in response also
     res.status(200).json({
       success: true,
       message: "Logged in successfully",
-      token, // <== ADD THIS
+      token,
       user: {
         email: checkUser.email,
         role: checkUser.role,
@@ -102,8 +101,8 @@ const loginUser = async (req, res) => {
 const logoutUser = (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    sameSite: "lax",
-    secure: false, // Set to true in production
+    secure: true,       // ✅ must match login
+    sameSite: "None",   // ✅ must match login
   });
 
   res.status(200).json({
@@ -114,6 +113,8 @@ const logoutUser = (req, res) => {
 
 // ✅ AUTH MIDDLEWARE
 const authMiddleware = async (req, res, next) => {
+  console.log("🍪 Incoming Cookies:", req.cookies); // Debug
+
   const token = req.cookies.token;
 
   if (!token) {
