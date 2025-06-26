@@ -73,8 +73,8 @@ const loginUser = async (req, res) => {
     // ✅ Set cookie
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, // Set to true in production
-      sameSite: "lax",
+      secure: true, // Set to true in production
+      sameSite: "None",
     });
 
     // ✅ Return token in response also
